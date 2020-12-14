@@ -1,0 +1,31 @@
+#!/bin/bash
+# Automates coversion from a platform.io project to an arduino version
+PROJECT=evalsw_ad5142
+
+# Create folder
+echo "Creating Folder"
+rm -rf ${PROJECT}
+mkdir ${PROJECT}
+
+echo "Copying Source Files"
+# Copy src files
+cp src/* ${PROJECT}/
+cd ${PROJECT}/
+echo "Renaming source Files in ${PROJECT} folder"
+for file in *.cpp; do mv "$file" "${file/.cpp/.ino}"; done
+cd ..
+
+# Copy Include Files
+echo "Copying Include Files"
+cp include/*.h ${PROJECT}/
+
+# optional zip
+read -p "Create ZIP file? [y/n] " -n 1 -r
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    echo
+    echo "Creating ZIP"
+    rm -f ${PROJECT}.zip
+    zip -r ${PROJECT}.zip ${PROJECT}/
+    echo
+fi
