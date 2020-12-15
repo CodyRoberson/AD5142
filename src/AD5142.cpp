@@ -79,3 +79,26 @@ void AD5142::software_reset(){
     c.struc.control = OP_SWRESET;
     spi_write(c.u);
 }
+
+void AD5142::setResistance(unsigned char wiper, unsigned int resistance){
+    if(wiper == 1)
+        ; //TODO: Implement 
+    else if(wiper == 2)
+        ; //TODO: Implement
+    else
+        ; //TODO: I just don't know anymore
+    
+    
+}
+
+
+unsigned int AD5142::getWiper1()
+{
+    unsigned int c;
+    c = readback_device(READBACK_RDAC_SELECT, RDAC1);
+}
+unsigned int AD5142::getWiper2()
+{
+    unsigned int c;
+    c = readback_device(READBACK_RDAC_SELECT, RDAC2);
+}

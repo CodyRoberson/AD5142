@@ -32,24 +32,31 @@ class AD5142
 private:
     /* data */
     SPIClass *spi_port; //SPI TO USE EG: SPI, SPI1, SPI2 ...
+    unsigned int wiper1, wiper2;
     unsigned int LE_PIN; //SPI LATCH ENABLE PIN 
 
     unsigned int spi_write(unsigned int data);
+    void write_to_rdac(unsigned char val, unsigned char rdac_n);
+    void write_to_input_register(unsigned char val, unsigned char rdac_n);
 
 public:
     AD5142(SPIClass *port, unsigned int LE_PIN)
     {
         this->spi_port = port;
         this->LE_PIN = LE_PIN;
+        this->wiper1 = 0;
+        this->wiper2 = 0;
     }
 
 
-    void write_to_rdac(unsigned char val, unsigned char rdac_n);
-    void write_to_input_register(unsigned char val, unsigned char rdac_n);
-    unsigned char readback_device(unsigned char contents, unsigned char rdac_n);
     void copyRDACtoEEPROM(unsigned char rdac_n);
     void copyEEPROMtoRDAC(unsigned char rdac_n);
     void software_reset();
+    unsigned char readback_device(unsigned char contents, unsigned char rdac_n);
+    
+    void setResistance(unsigned char wiper, unsigned int resistance);
+    unsigned int getWiper1();
+    unsigned int getWiper2();
 
 
 };
