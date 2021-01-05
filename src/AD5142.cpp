@@ -87,7 +87,7 @@ void AD5142::software_reset(){
 }
 
 void AD5142::setResistance(unsigned char wiper, int resistance){
-    
+    unsigned int c = 0, readback = 0;
     double x = round(-0.0256 * (resistance - 10000));
     int d = (int) x;
 
@@ -100,29 +100,42 @@ void AD5142::setResistance(unsigned char wiper, int resistance){
     }
     if(wiper == 1){
         this->write_to_rdac((unsigned char) d, RDAC1);
+        c = readback_device(READBACK_RDAC_SELECT, RDAC1);
+        readback = (unsigned int) (((256.0 - (double) c)/256.0) * 10000.0);
+        this->wiper1 = readback;
     }
     else if(wiper == 2)
+    {
         this->write_to_rdac((unsigned char) d, RDAC2);
-    else
-        ; //TODO: later feature: 4 wiper support
+        c = readback_device(READBACK_RDAC_SELECT, RDAC2);
+        readback = int (((256.0 - (double) c)/256.0) * 10000.0);
+        this->wiper2 = readback;
+    }
+    else {
+        return;
+    }
+
     
     
 }
-
 
 unsigned int AD5142::getWiper1()
 {
-    unsigned int c;
-    unsigned int d;
-    c = readback_device(READBACK_RDAC_SELECT, RDAC1);
-    d = int (((256.0 - (double) c)/256.0) * 10000.0);
-    return d;
+    return this->wiper1;
 }
 unsigned int AD5142::getWiper2()
 {
+    return this->wiper2;
+}
+/**
+ * @brief     
+ * 
+ *  u
+    return d;
+
     unsigned char c;
     unsigned int d;
-    c = readback_device(READBACK_RDAC_SELECT, RDAC2);
-    d = int (((256.0 - (double) c)/256.0) * 10000.0);
+
     return d;
-}
+ * 
+ */

@@ -38,26 +38,34 @@ private:
     unsigned int spi_write(unsigned int data);
     void write_to_rdac(unsigned char val, unsigned char rdac_n);
     void write_to_input_register(unsigned char val, unsigned char rdac_n);
+    unsigned char readback_device(unsigned char contents, unsigned char rdac_n);
 
 public:
     AD5142(SPIClass *port, unsigned int LE_PIN)
     {
         this->spi_port = port;
         this->LE_PIN = LE_PIN;
-        this->wiper1 = 0;
-        this->wiper2 = 0;
+        this->wiper1 = 5000;
+        this->wiper2 = 5000;
     }
 
-
+    //to be made private
     void copyRDACtoEEPROM(unsigned char rdac_n);
     void copyEEPROMtoRDAC(unsigned char rdac_n);
     void software_reset();
-    unsigned char readback_device(unsigned char contents, unsigned char rdac_n);
-    
-    void setResistance(unsigned char wiper, int resistance);
-    unsigned int getWiper1();
-    unsigned int getWiper2();
 
+    
+
+
+    //final public functions
+    void setResistance(unsigned char wiper, int resistance);
+    unsigned int getWiper1(); //TODO: convert to single function
+    unsigned int getWiper2(); //TODO: Convert to sngle function
+   
+    //TODO
+    //int saveSettingsToChip(){}
+    //int loadChipSettings(){}
+    //
 
 };
 
