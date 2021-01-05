@@ -2,13 +2,20 @@
 
 unsigned int AD5142::spi_write(unsigned int data)
 {
-    unsigned int ret = 0;
-    this->spi_port->beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE0));
+    unsigned int reta = 0;
+    this->spi_port->beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE1));
     digitalWrite(this->LE_PIN, LOW);
-    ret = this->spi_port->transfer16(data & 0xFFFF);
+   
+    delayMicroseconds(1);
+
+    reta = this->spi_port->transfer((data >> 8) & 0xFF);
+    reta = reta << 8;
+    reta = reta | this->spi_port->transfer(data & 0xFF);
+
     digitalWrite(this->LE_PIN, HIGH);
+
     this->spi_port->endTransaction();
-    return ret;
+    return reta;
 }
 
 void AD5142::write_to_rdac(unsigned char val, unsigned char rdac_n)
@@ -20,7 +27,6 @@ void AD5142::write_to_rdac(unsigned char val, unsigned char rdac_n)
     c.struc.control = OP_WRITE_SERIALREG_TO_RADC;
     c.struc.address = rdac_n;
     c.struc.data = val;
-
     spi_write(c.u);
 }
 
@@ -80,13 +86,25 @@ void AD5142::software_reset(){
     spi_write(c.u);
 }
 
-void AD5142::setResistance(unsigned char wiper, unsigned int resistance){
-    if(wiper == 1)
-        ; //TODO: Implement 
+void AD5142::setResistance(unsigned char wiper, int resistance){
+    
+    double x = round(-0.0256 * (resistance - 10000));
+    int d = (int) x;
+
+    if (d >= 256){
+        d = 255;
+    }
+    if (d < 1)
+    {
+        d = 1;
+    }
+    if(wiper == 1){
+        this->write_to_rdac((unsigned char) d, RDAC1);
+    }
     else if(wiper == 2)
-        ; //TODO: Implement
+        this->write_to_rdac((unsigned char) d, RDAC2);
     else
-        ; //TODO: I just don't know anymore
+        ; //TODO: later feature: 4 wiper support
     
     
 }
@@ -95,10 +113,16 @@ void AD5142::setResistance(unsigned char wiper, unsigned int resistance){
 unsigned int AD5142::getWiper1()
 {
     unsigned int c;
+    unsigned int d;
     c = readback_device(READBACK_RDAC_SELECT, RDAC1);
+    d = int (((256.0 - (double) c)/256.0) * 10000.0);
+    return d;
 }
 unsigned int AD5142::getWiper2()
 {
-    unsigned int c;
+    unsigned char c;
+    unsigned int d;
     c = readback_device(READBACK_RDAC_SELECT, RDAC2);
+    d = int (((256.0 - (double) c)/256.0) * 10000.0);
+    return d;
 }

@@ -54,7 +54,7 @@ public:
     void software_reset();
     unsigned char readback_device(unsigned char contents, unsigned char rdac_n);
     
-    void setResistance(unsigned char wiper, unsigned int resistance);
+    void setResistance(unsigned char wiper, int resistance);
     unsigned int getWiper1();
     unsigned int getWiper2();
 
